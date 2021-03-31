@@ -65,12 +65,9 @@ public class Controller {
 
     public void initialize() throws IOException {
         //PDFToHTML.start(filename+".pdf", filename+".html");
+
         paperTxtBox.setText(filename);
 
-       // topics.add(new Topic("1.1",	"Systems in organizations","Planning and system installation"));
-        //topics.add(new Topic("1.1",	"Systems in organizations","User focus"));
-       // topics.add(new Topic("1.1",	"Systems in organizations","System backup"));
-       // topics.add(new Topic("1.1",	"Systems in organizations","Software development"));
         topicTable.setEditable(false);
         TableColumn numberCol = new TableColumn("#");
         TableColumn topicCol = new TableColumn("Topic");
@@ -177,7 +174,7 @@ public class Controller {
     }
 
     /**
-     * Each pane has a return button
+     * Each pane has a return button to return to the main pane.
      */
     public void returnBtn(ActionEvent actionEvent) throws IOException, UnsupportedFlavorException {
         bankPane.setVisible(true);
@@ -233,6 +230,9 @@ public class Controller {
         return (Integer) view.getEngine().executeScript("document.body.scrollHeight");
     }
 
+    /**
+     * This button will copy what is selected and strip it of HTML tags. If text is copied directly, there are no spaces between words.
+     */
     public void CopySelection(ActionEvent actionEvent) {
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 
@@ -245,6 +245,9 @@ public class Controller {
         clipboard.setContents(result,result);
     }
 
+    /**
+     * This section retrieves the HTML of the selection.
+     */
     public static final String SELECT_HTML
             = "(getSelectionHTML = function () {\n"
             + "      var userSelection;\n"
@@ -292,10 +295,13 @@ public class Controller {
             return null;
         });
         Optional<Topic> optionalResult = dialog.showAndWait();
-
     }
 
     public void EnableEdit(ActionEvent actionEvent) {
-        topicTable.setEditable(true);
+        if(topicTable.isEditable()) {
+            topicTable.setEditable(false);
+        }else{
+            topicTable.setEditable(true);
+        }
     }
 }
