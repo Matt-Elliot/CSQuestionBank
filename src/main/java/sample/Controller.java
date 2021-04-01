@@ -1,10 +1,14 @@
 package sample;
 
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.sun.javafx.charts.Legend;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -12,6 +16,7 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -20,23 +25,20 @@ import javafx.scene.control.TextField;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 
-
 import java.awt.*;
 
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Writer;
+import java.io.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javafx.stage.StageStyle;
 import org.antlr.v4.runtime.misc.Triple;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.fit.pdfdom.PDFToHTML;
@@ -57,21 +59,27 @@ public class Controller {
 
     String filename= "Design_technology_paper_1__HL";
 
-    ObservableList<Topic> topics = FXCollections.observableArrayList(
-    new Topic("1.1",	"Systems in organizations","Planning and system installation"),
-    new Topic("1.1",	"Systems in organizations","User focus"),
-    new Topic("1.1",	"Systems in organizations","System backup"),
-    new Topic("1.1",	"Systems in organizations","Software development"));
+    ObservableList<Topic> topics = FXCollections.observableArrayList();
+    private TableColumn<Topic, String> subtopicCol = new TableColumn("Subtopic");
 
     public void initialize() throws IOException {
-        //PDFToHTML.start(filename+".pdf", filename+".html");
+
+
+        //open Json
+        Gson gson = new Gson();
+        try (Reader reader = new FileReader("topics.json")) {
+            // Convert JSON File to Java Object
+            ArrayList<Topic> imports = gson.fromJson(reader, new TypeToken<ArrayList<Topic>>() {}.getType());
+            topics = FXCollections.observableArrayList(imports);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         paperTxtBox.setText(filename);
 
         topicTable.setEditable(false);
         TableColumn numberCol = new TableColumn("#");
         TableColumn topicCol = new TableColumn("Topic");
-        TableColumn subtopicCol = new TableColumn("Subtopic");
 
         topicTable.getColumns().addAll(numberCol, topicCol,subtopicCol);
 
@@ -102,7 +110,53 @@ public class Controller {
                 }
         );
         subtopicCol.setCellValueFactory(
-                new PropertyValueFactory<Topic,String>("subtopic"));
+                new PropertyValueFactory<Topic,String>( "subtopic"));
+
+        topicTable.setItems(topics);
+        setClick(); //lets you click the table.
+
+        paperTable.setEditable(true); //This needs finishing
+    }
+
+    /**
+     * Question Bank
+     */
+
+    public void ModifyPaper(ActionEvent actionEvent) {
+    }
+
+    public void AddNewPaper(ActionEvent actionEvent) {
+    }
+
+    public void addNewTopic(ActionEvent actionEvent) {
+        Dialog<Topic> dialog = new Dialog<>();
+        dialog.setTitle("Add new topic");
+        DialogPane dialogPane = dialog.getDialogPane();
+        dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+        TextField numberTextField = new TextField("number");
+        TextField topicTextField = new TextField("topic");
+        TextField subtopicTextField = new TextField("subtopic");
+
+        dialogPane.setContent(new VBox(8, numberTextField, topicTextField, subtopicTextField));
+        Platform.runLater(numberTextField::requestFocus);
+        dialog.setResultConverter((ButtonType button) -> {
+            if(!numberTextField.getText().equals("")&&!topicTextField.getText().equals("")&&!subtopicTextField.getText().equals("")) {
+                if (button == ButtonType.OK) {
+                    topics.add(new Topic(numberTextField.getText(), topicTextField.getText(), subtopicTextField.getText()));
+                }
+            }else{
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Incorrect input");
+                alert.setHeaderText(null);
+                alert.setContentText("All 3 boxes need filling. If there is no subtopic, type the same topic.");
+                alert.showAndWait();
+            }
+            return null;
+        });
+        Optional<Topic> optionalResult = dialog.showAndWait();
+    }
+
+    public void setEdit(){
         subtopicCol.setCellFactory(TextFieldTableCell.forTableColumn());
         subtopicCol.setOnEditCommit(
                 new EventHandler<TableColumn.CellEditEvent<Topic, String>>() {
@@ -114,44 +168,91 @@ public class Controller {
                     }
                 }
         );
-
-        topicTable.setItems(topics);
-
-
-
-
-
-        //fontWebView.getEngine().setJavaScriptEnabled(true);
-        //File f = new File(filename+".html");
-        //String content = Files.asCharSource(f, Charsets.UTF_8).read();
-        //fontWebView.getEngine().loadContent(content);
-
-
-        paperTable.setEditable(true);
     }
 
+    public void setClick() {
+        subtopicCol.setCellFactory(tc -> {
+            TableCell<Topic, String> cell = new TableCell<Topic, String>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    setText(empty ? null : item);
+                }
+            };
+            cell.setOnMouseClicked(e -> {
+                if (!cell.isEmpty()) {
+                    String userId = cell.getText();
+                    System.out.println(userId);
+                }
+            });
+
+            return cell;
+        });
+    }
+
+    public void EnableEdit(ActionEvent actionEvent) {
+        if(topicTable.isEditable()) {
+            topicTable.setEditable(false);
+            setClick();
+        }else{
+            topicTable.setEditable(true);
+            setEdit();
+        }
+    }
+
+    public void saveObjects(ActionEvent actionEvent) throws IOException {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        try (FileWriter writer = new FileWriter("topics.json")) {
+            gson.toJson(topics, writer);
+            System.out.println("Saved.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+
+
+    /**
+     * Modify Paper
+     */
+    public void deleteBtn(ActionEvent actionEvent) {
+    }
+
+    public void addBtn(ActionEvent actionEvent) {
+    }
+
+    /**
+     * Questions pane
+     */
+    public void previousBtn(ActionEvent actionEvent) {
+    }
+
+    public void nextBtn(ActionEvent actionEvent) {
+    }
+
+
+//Helper functions
+
+    /**
+     * Each pane has a return button to return to the main pane.
+     */
+    public void returnBtn(ActionEvent actionEvent) throws IOException, UnsupportedFlavorException {
+        bankPane.setVisible(true);
+        questionPane.setVisible(false);
+        modifyPaperPane.setVisible(false);
+    }
+
+    //Scrolling functions.
     public void scroll() {
         scrollTo(fontWebView,0,Integer.parseInt(scrollPositionTxtBox.getText()));
     }
 
-    public static StringBuilder scrollWebView(int xPos, int yPos) {
-        StringBuilder script = new StringBuilder().append("<html>");
-        script.append("<head>");
-        script.append("   <script language=\"javascript\" type=\"text/javascript\">");
-        script.append("       function toBottom(){");
-        script.append("           window.scrollTo(" + xPos + ", " + yPos + ");");
-        script.append("       }");
-        script.append("   </script>");
-        script.append("</head>");
-        script.append("<body onload='toBottom()'>");
-        return script;
-    }
-
-
     public void updateScroll(ScrollEvent scrollEvent) {
-        scrollPositionTxtBox.setText(Integer.toString(getVScrollValue(fontWebView)));
-        mscrollPositionTxtBox.setText(Integer.toString(getVScrollValue(fontWebView)));
-    }
+    scrollPositionTxtBox.setText(Integer.toString(getVScrollValue(fontWebView)));
+    mscrollPositionTxtBox.setText(Integer.toString(getVScrollValue(fontWebView)));
+}
 
     /**
      * Scrolls to the specified position.
@@ -171,33 +272,6 @@ public class Controller {
      */
     public int getVScrollValue(WebView view) {
         return (Integer) view.getEngine().executeScript("document.body.scrollTop");
-    }
-
-    /**
-     * Each pane has a return button to return to the main pane.
-     */
-    public void returnBtn(ActionEvent actionEvent) throws IOException, UnsupportedFlavorException {
-        bankPane.setVisible(true);
-        questionPane.setVisible(false);
-        modifyPaperPane.setVisible(false);
-    }
-
-    /**
-     * Modify Paper pane buttons
-     */
-    public void deleteBtn(ActionEvent actionEvent) {
-    }
-
-    public void addBtn(ActionEvent actionEvent) {
-    }
-
-    /**
-     * Questions pane buttons
-     */
-    public void previousBtn(ActionEvent actionEvent) {
-    }
-
-    public void nextBtn(ActionEvent actionEvent) {
     }
 
     /**
@@ -230,8 +304,10 @@ public class Controller {
         return (Integer) view.getEngine().executeScript("document.body.scrollHeight");
     }
 
+    //copying text
     /**
-     * This button will copy what is selected and strip it of HTML tags. If text is copied directly, there are no spaces between words.
+     * This button will copy what is selected to the clipboard and strip it of HTML tags.
+     * If text is copied directly (Ctrl+c), there are no spaces between words.
      */
     public void CopySelection(ActionEvent actionEvent) {
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -277,31 +353,6 @@ public class Controller {
             + "    })()";
 
 
-    public void addNewTopic(ActionEvent actionEvent) {
-        Dialog<Topic> dialog = new Dialog<>();
-        dialog.setTitle("Add new topic");
-        DialogPane dialogPane = dialog.getDialogPane();
-        dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-        TextField numberTextField = new TextField("number");
-        TextField topicTextField = new TextField("topic");
-        TextField subtopicTextField = new TextField("subtopic");
 
-        dialogPane.setContent(new VBox(8, numberTextField, topicTextField, subtopicTextField));
-        Platform.runLater(numberTextField::requestFocus);
-        dialog.setResultConverter((ButtonType button) -> {
-            if (button == ButtonType.OK) {
-                topics.add(new Topic(numberTextField.getText(), topicTextField.getText(), subtopicTextField.getText()));
-            }
-            return null;
-        });
-        Optional<Topic> optionalResult = dialog.showAndWait();
-    }
 
-    public void EnableEdit(ActionEvent actionEvent) {
-        if(topicTable.isEditable()) {
-            topicTable.setEditable(false);
-        }else{
-            topicTable.setEditable(true);
-        }
-    }
 }

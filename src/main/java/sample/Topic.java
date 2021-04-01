@@ -1,11 +1,15 @@
 package sample;
 
+import javafx.scene.control.Hyperlink;
+
 import java.util.ArrayList;
 
 public class Topic {
     String number;
     String topic;
     String subtopic;
+    String link;
+
     ArrayList<Question> questions = new ArrayList<Question>();
 
     public Topic(String number, String topic, String subtopic) {

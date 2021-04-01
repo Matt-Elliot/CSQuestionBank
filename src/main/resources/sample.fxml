@@ -24,8 +24,8 @@
    <children>
       <AnchorPane fx:id="bankPane" layoutX="10.0" layoutY="10.0" prefHeight="607.0" prefWidth="1052.0">
          <children>
-            <Button layoutX="859.0" layoutY="533.0" mnemonicParsing="false" onAction="#deleteBtn" prefHeight="25.0" prefWidth="180.0" text="Modify Existing Paper" />
-            <Button layoutX="858.0" layoutY="568.0" mnemonicParsing="false" onAction="#addBtn" prefHeight="25.0" prefWidth="180.0" text="Add New Paper" />
+            <Button layoutX="859.0" layoutY="533.0" mnemonicParsing="false" onAction="#ModifyPaper" prefHeight="25.0" prefWidth="180.0" text="Modify Existing Paper" />
+            <Button layoutX="858.0" layoutY="568.0" mnemonicParsing="false" onAction="#AddNewPaper" prefHeight="25.0" prefWidth="180.0" text="Add New Paper" />
             <Button layoutX="14.0" layoutY="568.0" mnemonicParsing="false" onAction="#returnBtn" prefHeight="25.0" prefWidth="63.0" text="Return" />
             <TableView fx:id="topicTable" layoutX="14.0" layoutY="17.0" prefHeight="542.0" prefWidth="685.0">
 
@@ -37,7 +37,7 @@
                   <TableColumn prefWidth="70.0" text="Qs in total" />
               </columns>
             </TableView>
-            <Button layoutX="569.0" layoutY="568.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="130.0" text="Save" />
+            <Button layoutX="569.0" layoutY="568.0" mnemonicParsing="false" onAction="#saveObjects" prefHeight="25.0" prefWidth="130.0" text="Save" />
             <Button layoutX="450.0" layoutY="568.0" mnemonicParsing="false" onAction="#addNewTopic" prefHeight="25.0" prefWidth="112.0" text="Add new topic" />
             <CheckBox layoutX="346.0" layoutY="572.0" mnemonicParsing="false" onAction="#EnableEdit" prefHeight="17.0" prefWidth="90.0" text="Enable Edit" />
          </children>
