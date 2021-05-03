@@ -22,8 +22,8 @@ public class Topic {
         return questions;
     }
 
-    public void setQuestions(ArrayList<Question> questions) {
-        this.questions = questions;
+    public void addQuestion(String paper, String questionNumber, int scrollLocation ) {
+        this.questions.add(new Question(paper, questionNumber,scrollLocation));
     }
 
     public String getNumber() {
@@ -45,4 +45,8 @@ public class Topic {
         this.subtopic = subtopic;
     }
 
+    @Override
+    public String toString() {
+        return number+ " "+ topic + " "+subtopic;
+    }
 }

@@ -3,11 +3,9 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -22,52 +20,36 @@
       <RowConstraints />
    </rowConstraints>
    <children>
-      <AnchorPane fx:id="bankPane" layoutX="10.0" layoutY="10.0" prefHeight="607.0" prefWidth="1052.0">
+      <AnchorPane fx:id="bankPane" layoutX="10.0" layoutY="10.0" prefHeight="607.0" prefWidth="1052.0" visible="false">
          <children>
-            <Button layoutX="859.0" layoutY="533.0" mnemonicParsing="false" onAction="#ModifyPaper" prefHeight="25.0" prefWidth="180.0" text="Modify Existing Paper" />
-            <Button layoutX="858.0" layoutY="568.0" mnemonicParsing="false" onAction="#AddNewPaper" prefHeight="25.0" prefWidth="180.0" text="Add New Paper" />
-            <Button layoutX="14.0" layoutY="568.0" mnemonicParsing="false" onAction="#returnBtn" prefHeight="25.0" prefWidth="63.0" text="Return" />
+            <Button layoutX="718.0" layoutY="568.0" mnemonicParsing="false" onAction="#AddNewPaper" prefHeight="25.0" prefWidth="320.0" text="Add New Paper" />
             <TableView fx:id="topicTable" layoutX="14.0" layoutY="17.0" prefHeight="542.0" prefWidth="685.0">
 
             </TableView>
-            <TableView fx:id="paperTable" layoutX="718.0" layoutY="17.0" prefHeight="312.0" prefWidth="320.0">
-              <columns>
-                <TableColumn prefWidth="180.0" text="Paper" />
-                <TableColumn prefWidth="70.0" text="Qs in bank" />
-                  <TableColumn prefWidth="70.0" text="Qs in total" />
-              </columns>
-            </TableView>
-            <Button layoutX="569.0" layoutY="568.0" mnemonicParsing="false" onAction="#saveObjects" prefHeight="25.0" prefWidth="130.0" text="Save" />
+            <Button layoutX="569.0" layoutY="568.0" mnemonicParsing="false" onAction="#saveObjects" prefHeight="25.0" prefWidth="130.0" text="Save topics" />
             <Button layoutX="450.0" layoutY="568.0" mnemonicParsing="false" onAction="#addNewTopic" prefHeight="25.0" prefWidth="112.0" text="Add new topic" />
             <CheckBox layoutX="346.0" layoutY="572.0" mnemonicParsing="false" onAction="#EnableEdit" prefHeight="17.0" prefWidth="90.0" text="Enable Edit" />
+            <ListView fx:id="paperList" layoutX="706.0" layoutY="43.0" onMouseClicked="#paperClicked" prefHeight="516.0" prefWidth="339.0" />
+            <Label layoutX="706.0" layoutY="26.0" text="Papers found:" />
          </children>
       </AnchorPane>
-      <AnchorPane fx:id="questionPane" layoutX="10.0" layoutY="10.0" prefHeight="607.0" prefWidth="1052.0" visible="false">
+      <AnchorPane fx:id="modifyPaperPane" prefHeight="607.0" prefWidth="1052.0">
          <children>
-            <WebView fx:id="fontWebView" layoutX="14.0" layoutY="62.0" onScroll="#updateScroll" prefHeight="495.0" prefWidth="830.0" />
-            <ListView fx:id="alsoInListView" layoutX="858.0" layoutY="14.0" prefHeight="199.0" prefWidth="180.0" />
-            <ListView fx:id="topicSelectListView" layoutX="858.0" layoutY="254.0" prefHeight="343.0" prefWidth="180.0" />
-            <Button layoutX="858.0" layoutY="220.0" mnemonicParsing="false" onAction="#previousBtn" prefHeight="25.0" prefWidth="84.0" text="Previous" />
-            <Button layoutX="954.0" layoutY="220.0" mnemonicParsing="false" onAction="#nextBtn" prefHeight="25.0" prefWidth="84.0" text="Next" />
-            <TextField fx:id="questionsLeftTxtBox" layoutX="458.0" layoutY="14.0" prefHeight="37.0" prefWidth="385.0" text="For this paper there are ___ out of a possible ___ questoin in the bank." />
+            <WebView fx:id="mfontWebView" layoutX="14.0" layoutY="52.0" prefHeight="506.0" prefWidth="830.0" />
+            <ListView fx:id="mtopicSelectListView" layoutX="854.0" layoutY="328.0" prefHeight="230.0" prefWidth="188.0" />
+            <Button layoutX="930.0" layoutY="568.0" mnemonicParsing="false" onAction="#ModifyQuestionBtn" prefHeight="25.0" prefWidth="112.0" text="Modify Question" />
+            <ChoiceBox fx:id="mpaperChoiceBox" layoutX="61.0" layoutY="14.0" prefHeight="25.0" prefWidth="296.0" />
             <Button layoutX="14.0" layoutY="568.0" mnemonicParsing="false" onAction="#returnBtn" prefHeight="25.0" prefWidth="63.0" text="Return" />
-            <TextArea fx:id="paperTxtBox" layoutX="14.0" layoutY="14.0" prefHeight="38.0" prefWidth="435.0" text="paper" />
-            <Button layoutX="687.0" layoutY="568.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="158.0" text="See Mark Scheme" />
-            <Button layoutX="513.0" layoutY="568.0" mnemonicParsing="false" onAction="#CopySelection" prefHeight="25.0" prefWidth="164.0" text="Copy Selection to clipboard" />
-         </children>
-      </AnchorPane>
-      <AnchorPane fx:id="modifyPaperPane" prefHeight="607.0" prefWidth="1052.0" visible="false">
-         <children>
-            <WebView fx:id="mfontWebView" layoutX="14.0" layoutY="62.0" onScroll="#updateScroll" prefHeight="495.0" prefWidth="830.0" />
-            <TextArea fx:id="mscrollPositionTxtBox" layoutX="858.0" layoutY="221.0" prefHeight="38.0" prefWidth="180.0" text="0" />
-            <TextArea fx:id="mquestionNumberTxtBox" layoutX="858.0" layoutY="266.0" prefHeight="38.0" prefWidth="180.0" text="0" />
-            <ListView fx:id="malsoInListView" layoutX="858.0" layoutY="14.0" prefHeight="199.0" prefWidth="180.0" />
-            <ListView fx:id="mtopicSelectListView" layoutX="858.0" layoutY="313.0" prefHeight="244.0" prefWidth="180.0" />
-            <Button layoutX="858.0" layoutY="568.0" mnemonicParsing="false" onAction="#deleteBtn" prefHeight="25.0" prefWidth="84.0" text="Delete" />
-            <Button layoutX="954.0" layoutY="568.0" mnemonicParsing="false" onAction="#addBtn" prefHeight="25.0" prefWidth="84.0" text="Add" />
-            <TextField fx:id="mquestionsLeftTxtBox" layoutX="458.0" layoutY="14.0" prefHeight="37.0" prefWidth="385.0" text="For this paper there are ___ out of a possible ___ questoin in the bank." />
-            <ChoiceBox fx:id="mpaperChoiceBox" layoutX="14.0" layoutY="20.0" prefHeight="25.0" prefWidth="296.0" />
-            <Button layoutX="14.0" layoutY="568.0" mnemonicParsing="false" onAction="#returnBtn" prefHeight="25.0" prefWidth="63.0" text="Return" />
+            <Label layoutX="21.0" layoutY="18.0" text="Paper:" />
+            <Label layoutX="137.0" layoutY="572.0" text="Topic Chosen" />
+            <Button layoutX="364.0" layoutY="14.0" mnemonicParsing="false" onAction="#getPaperTopicsList" prefHeight="25.0" prefWidth="84.0" text="Topic List " />
+            <Button layoutX="455.0" layoutY="14.0" mnemonicParsing="false" onAction="#ShowMS" text="Mark Scheme" />
+            <Button layoutX="830.0" layoutY="568.0" mnemonicParsing="false" onAction="#addQuestion" text="Add Question" />
+            <Label layoutX="855.0" layoutY="306.0" text="Current Topic Questions" />
+            <Label layoutX="855.0" layoutY="52.0" text="Current Paper Questions" />
+            <ListView fx:id="mpaperSelectListView" layoutX="854.0" layoutY="74.0" prefHeight="230.0" prefWidth="188.0" />
+            <ChoiceBox fx:id="mtopicsChoiceBox" layoutX="214.0" layoutY="568.0" prefHeight="25.0" prefWidth="529.0" />
+            <Button layoutX="751.0" layoutY="568.0" mnemonicParsing="false" onAction="#CopySelection" text="Copy Text" />
          </children></AnchorPane>
    </children>
 </GridPane>
